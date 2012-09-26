@@ -3,6 +3,7 @@ package com.pdev.swf
 	import com.pdev.data.ImportSettings;
 	import com.pdev.utils.MovieClipControl;
 	import flash.display.BitmapData;
+	import flash.display.DisplayObject;
 	import flash.display.MovieClip;
 	import flash.display.Shape;
 	import flash.display.Sprite;
@@ -27,6 +28,8 @@ package com.pdev.swf
 		public var frames:/*SWFFrame*/Array;
 		
 		private var container:Sprite;
+		
+		public var globalRect:Rectangle;
 		
 		private var display:MovieClip;
 		private var scale:Number;
@@ -68,10 +71,16 @@ package com.pdev.swf
 				dispatchEvent( new ProgressEvent( ProgressEvent.PROGRESS, false, false, display.totalFrames, display.totalFrames));
 				dispatchEvent( new Event( Event.COMPLETE));
 				
+				stop();
+				
 				return;
 			}
 			
-			var rect:Rectangle = display.getBounds( container);
+			var rect:Rectangle = getRealBounds( display);
+			
+			if ( globalRect == null) globalRect = rect;
+			else globalRect = globalRect.union( rect);
+			
 			if ( Math.floor( rect.width) == 0 || Math.floor( rect.height) == 0) return;
 			
 			rect.width *= scale;
@@ -104,16 +113,45 @@ package com.pdev.swf
 			MovieClipControl.play( display);
 		}
 		
-		private function ply( obj:MovieClip):void
+		private function getRealBounds( clip:DisplayObject):Rectangle
 		{
-			obj.play();
-			for ( var i:int = 0; i < obj.numChildren; i++)
+			var bounds:Rectangle = clip.getBounds(clip.parent);
+			bounds.x = Math.floor(bounds.x);
+			bounds.y = Math.floor(bounds.y);
+			bounds.height = Math.ceil(bounds.height);
+			bounds.width = Math.ceil(bounds.width);
+			
+			var realBounds:Rectangle = new Rectangle(0, 0, bounds.width + padding.x * 2, bounds.height + padding.y * 2);
+			
+			if (clip.filters.length > 0)
 			{
-				if ( obj.getChildAt( i) is MovieClip)
+				var j:int = 0;
+				
+				var clipFilters:Array = clip.filters;
+				var clipFiltersLength:int = clipFilters.length;
+				var tmpBData:BitmapData;
+				var filterRect:Rectangle;
+				
+				tmpBData = new BitmapData(realBounds.width, realBounds.height, false);
+				filterRect = tmpBData.generateFilterRect(tmpBData.rect, clipFilters[j]);
+				tmpBData.dispose();
+				
+				while ( ++j < clipFiltersLength)
 				{
-					ply( obj.getChildAt( i) as MovieClip);
+					tmpBData = new BitmapData(filterRect.width, filterRect.height, true, 0);
+					filterRect = tmpBData.generateFilterRect(tmpBData.rect, clipFilters[j]);
+					realBounds = realBounds.union(filterRect);
+					tmpBData.dispose();
 				}
 			}
+
+			realBounds.offset( bounds.x, bounds.y);
+			realBounds.width = Math.max(realBounds.width, 1);
+			realBounds.height = Math.max(realBounds.height, 1);
+
+			tmpBData = null;
+			
+			return realBounds;
 		}
 		
 	}

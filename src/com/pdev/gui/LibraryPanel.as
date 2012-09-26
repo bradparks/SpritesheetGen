@@ -27,35 +27,34 @@ package com.pdev.gui
 	 * ...
 	 * @author P Svilans
 	 */
-	public class LibraryPanel extends EventDispatcher
+	public class LibraryPanel extends Window
 	{
 		
 		[Event(name="swfLoad", type="com.pdev.events.SWFLoadEvent")]
 		
-		public var display:Component;
-		
 		private var swfList:List;
 		
 		private var frameDisplay:SpriteFrameDisplay;
+		private var previewPanel:AnimationPreviewPanel;
 		
-		public function LibraryPanel( display:Component, frameDisplay:SpriteFrameDisplay):void
+		public function LibraryPanel( parent:DisplayObjectContainer, frameDisplay:SpriteFrameDisplay, previewPanel:AnimationPreviewPanel):void
 		{
+			super( parent, 0, 0, "Animation Library");
+			
 			this.frameDisplay = frameDisplay;
+			this.previewPanel = previewPanel;
 			
-			this.display = display;
-			display.addEventListener(Event.SELECT, updateWindow);
-			
-			swfList = new List( display, 0, 0);
+			swfList = new List( this, 0, 0);
 			swfList.addEventListener(Event.SELECT, onListSelect);
 			swfList.listItemClass = LibraryItem;
 			
-			display.addEventListener( NativeDragEvent.NATIVE_DRAG_ENTER, onDragEnter);
-			display.addEventListener( NativeDragEvent.NATIVE_DRAG_DROP, onDragDrop);
+			this.addEventListener( NativeDragEvent.NATIVE_DRAG_ENTER, onDragEnter);
+			this.addEventListener( NativeDragEvent.NATIVE_DRAG_DROP, onDragDrop);
 		}
 		
 		private function onDragEnter(e:NativeDragEvent):void 
 		{
-			NativeDragManager.acceptDragDrop( display);
+			NativeDragManager.acceptDragDrop( this);
 			NativeDragManager.dropAction = NativeDragActions.LINK;
 		}
 		
@@ -91,19 +90,14 @@ package com.pdev.gui
 		{
 			var libraryData:LibraryData = swfList.selectedItem as LibraryData;
 			frameDisplay.display( libraryData.spritesheet);
+			previewPanel.preview( libraryData.spritesheet);
 		}
 		
-		private function updateWindow( e:Event):void
+		override public function setSize(w:Number, h:Number):void 
 		{
-			update();
-		}
-		
-		public function update():void
-		{
-			if ( display.stage != null)
-			{
-				swfList.setSize( display.width, display.height - 40);
-			}
+			super.setSize(w, h);
+			
+			if ( swfList) swfList.setSize( this.width, this.height - 40);
 		}
 		
 	}

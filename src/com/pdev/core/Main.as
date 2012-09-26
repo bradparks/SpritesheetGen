@@ -11,6 +11,7 @@ package com.pdev.core
 	import com.pdev.events.AnimationLoadEvent;
 	import com.pdev.events.SWFLoadEvent;
 	import com.pdev.gui.AnimationImporterWindow;
+	import com.pdev.gui.AnimationPreviewPanel;
 	import com.pdev.gui.LibraryPanel;
 	import com.pdev.gui.MainPanel;
 	import com.pdev.gui.SpriteFrameDisplay;
@@ -50,6 +51,7 @@ package com.pdev.core
 		private var swfLoader:SWFLoader;
 		
 		private var frameDisplay:SpriteFrameDisplay;
+		private var previewPanel:AnimationPreviewPanel;
 		
 		public function Main():void 
 		{
@@ -73,14 +75,11 @@ package com.pdev.core
 			frameDisplay = new SpriteFrameDisplay();
 			this.addChild( frameDisplay);
 			
-			sideBar = new Accordion( this, 0, 120);
-			sideBar.addWindow( "Animation Library");
-			sideBar.addWindow( "Settings");
+			previewPanel = new AnimationPreviewPanel( this);
 			
-			sideBar.removeWindowAt( 0);
-			sideBar.removeWindowAt( 0);
-			
-			libraryPanel = new LibraryPanel( sideBar.getWindowAt( 0), frameDisplay);
+			libraryPanel = new LibraryPanel( this, frameDisplay, previewPanel);
+			libraryPanel.x = 0;
+			libraryPanel.y = 120;
 			libraryPanel.addEventListener( SWFLoadEvent.SWF_LOAD, loadSWFS);
 			
 			swfLoader = new SWFLoader( importMovieClips);
@@ -89,7 +88,7 @@ package com.pdev.core
 			mainPanel = new MainPanel( frameDisplay, swfLoader);
 			this.addChild( mainPanel.display);
 			
-			sideBar.getWindowAt(0).dispatchEvent( new Event( Event.SELECT));
+			//sideBar.getWindowAt(0).dispatchEvent( new Event( Event.SELECT));
 			
 			updateGUI();
 		}
@@ -164,8 +163,9 @@ package com.pdev.core
 			
 			frameDisplay.setSize( stage.stageWidth - 200, stage.stageHeight - 120);
 			
-			sideBar.setSize( 200, stage.stageHeight - mainPanel.display.height);
-			libraryPanel.update();
+			previewPanel.y = stage.stageHeight - 250;
+			previewPanel.setSize( 200, 250);
+			libraryPanel.setSize( 200, ( stage.stageHeight - mainPanel.display.height - previewPanel.height));
 		}
 		
 	}

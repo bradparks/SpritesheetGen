@@ -14,6 +14,8 @@ package com.pdev.data
 		public var scale:Number;
 		public var padding:Point;
 		
+		public var framerate:int;
+		
 		public function ImportSettings( name:String, movieclip:MovieClip, scale:Number = 1.0, padding:Point = null) 
 		{
 			this.name = name;

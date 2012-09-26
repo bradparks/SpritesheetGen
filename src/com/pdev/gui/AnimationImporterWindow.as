@@ -34,11 +34,15 @@ package com.pdev.gui
 		
 		private var objects:/*ImporterSettings*/Array;
 		
+		private var framerate:int;
+		
 		public function AnimationImporterWindow( parent:DisplayObjectContainer, loaderInfo:LoaderInfo) 
 		{
 			super( parent);
 			
 			objects = new Array();
+			
+			framerate = loaderInfo.frameRate;
 			
 			currentSWF = new Label( this, 5, 5);
 			
@@ -100,6 +104,7 @@ package com.pdev.gui
 				if ( objects[i].checkBox.selected)
 				{
 					var setting:ImportSettings = new ImportSettings( objects[i].nameChange.text, objects[i].movieclip, objects[i].scale.value);
+					setting.framerate = framerate;
 					settings.push( setting);
 				}
 			}
