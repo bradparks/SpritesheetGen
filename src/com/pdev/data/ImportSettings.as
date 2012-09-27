@@ -2,6 +2,7 @@ package com.pdev.data
 {
 	import flash.display.MovieClip;
 	import flash.geom.Point;
+	import flash.geom.Rectangle;
 	/**
 	 * ...
 	 * @author P Svilans
@@ -15,6 +16,8 @@ package com.pdev.data
 		public var padding:Point;
 		
 		public var framerate:int;
+		
+		public var canvasSize:Rectangle;
 		
 		public function ImportSettings( name:String, movieclip:MovieClip, scale:Number = 1.0, padding:Point = null) 
 		{

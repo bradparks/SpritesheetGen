@@ -38,12 +38,11 @@ package com.pdev.gui
 		{
 			super( parent, 0, 0, "Live Preview");
 			
-			render = new Bitmap( new BitmapData( 2, 2, true, 0));
+			render = new Bitmap( new BitmapData( 2, 2, true, 0), "auto", true);
 			
-			vbox = new VBox( this);
-			vbox.addChild( render);
+			this.addChild( render);
 			
-			hbox = new HBox( vbox);
+			hbox = new HBox( this, 0, this.height - 50);
 			
 			play_btn = new PushButton( hbox, 0, 0, "Play", onPlay);
 			play_btn.setSize( 65, play_btn.height);
@@ -72,9 +71,10 @@ package com.pdev.gui
 		public function preview( spritesheet:SWFSpriteSheet):void
 		{
 			current = spritesheet;
+			trace ( spritesheet.globalRect);
 			canvas = new BitmapData( spritesheet.globalRect.width, spritesheet.globalRect.height, true, 0);
 			render.bitmapData = canvas;
-			var scale:Number = Math.min( 200 / canvas.width, ( this.height - 50) / canvas.height);
+			var scale:Number = Math.min( this.width / canvas.width, ( this.height - 20) / canvas.height);
 			render.scaleX = render.scaleY = scale;
 			
 			offset = new Point( spritesheet.globalRect.x, spritesheet.globalRect.y);
@@ -96,6 +96,13 @@ package com.pdev.gui
 				canvas.fillRect( canvas.rect, 0);
 				canvas.copyPixels( frame.bd, frame.bd.rect, new Point( frame.rect.x, frame.rect.y).subtract( offset));
 			}
+		}
+		
+		override public function setSize(w:Number, h:Number):void 
+		{
+			super.setSize(w, h);
+			
+			if ( hbox) hbox.y = this.height - 50;
 		}
 		
 		public function get currentFrame():int 

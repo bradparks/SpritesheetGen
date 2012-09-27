@@ -6,6 +6,7 @@ package com.pdev.gui
 	import com.bit101.components.Panel;
 	import com.bit101.components.Window;
 	import com.pdev.data.LibraryData;
+	import com.pdev.events.LibraryEvent;
 	import com.pdev.events.SWFLoadEvent;
 	import com.pdev.swf.SWFSpriteSheet;
 	import flash.desktop.ClipboardFormats;
@@ -30,21 +31,16 @@ package com.pdev.gui
 	public class LibraryPanel extends Window
 	{
 		
+		[Event(name="select", type="com.pdev.events.LibraryEvent")]
 		[Event(name="swfLoad", type="com.pdev.events.SWFLoadEvent")]
 		
-		private var swfList:List;
+		private var swfList:com.bit101.components.List;
 		
-		private var frameDisplay:SpriteFrameDisplay;
-		private var previewPanel:AnimationPreviewPanel;
-		
-		public function LibraryPanel( parent:DisplayObjectContainer, frameDisplay:SpriteFrameDisplay, previewPanel:AnimationPreviewPanel):void
+		public function LibraryPanel( parent:DisplayObjectContainer):void
 		{
 			super( parent, 0, 0, "Animation Library");
 			
-			this.frameDisplay = frameDisplay;
-			this.previewPanel = previewPanel;
-			
-			swfList = new List( this, 0, 0);
+			swfList = new com.bit101.components.List( this, 0, 0);
 			swfList.addEventListener(Event.SELECT, onListSelect);
 			swfList.listItemClass = LibraryItem;
 			
@@ -89,8 +85,8 @@ package com.pdev.gui
 		private function onListSelect(e:Event):void 
 		{
 			var libraryData:LibraryData = swfList.selectedItem as LibraryData;
-			frameDisplay.display( libraryData.spritesheet);
-			previewPanel.preview( libraryData.spritesheet);
+			
+			dispatchEvent( new LibraryEvent( LibraryEvent.SELECT, libraryData.spritesheet));
 		}
 		
 		override public function setSize(w:Number, h:Number):void 

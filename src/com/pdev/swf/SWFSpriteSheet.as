@@ -26,10 +26,12 @@ package com.pdev.swf
 		
 		public var name:String;
 		public var frames:/*SWFFrame*/Array;
+		public var bdArray:/*BitmapData*/Array;
 		
 		private var container:Sprite;
 		
 		public var globalRect:Rectangle;
+		
 		
 		private var display:MovieClip;
 		private var scale:Number;
@@ -37,10 +39,15 @@ package com.pdev.swf
 		
 		public var settings:ImportSettings;
 		
+		public var packer:FramePacker;
+		public var canvasSize:Rectangle;
+		public var canvas:BitmapData;
+		
 		public function SWFSpriteSheet( importSettings:ImportSettings) 
 		{
 			this.settings = importSettings;
 			frames = new Array();
+			bdArray = new Array();
 			
 			this.name = settings.name;
 			
@@ -54,12 +61,40 @@ package com.pdev.swf
 			container = new Sprite();
 			container.addChild( display);
 			
+			this.canvasSize = settings.canvasSize;
+			if ( this.canvasSize == null) this.canvasSize = new Rectangle( 0, 0, 512, 512);
+			
 			stop();
 			reset();
 			
 			display.addEventListener(Event.ENTER_FRAME, drawFrames);
 			drawFrames();
 			play();
+			
+			packer = new FramePacker();
+		}
+		
+		public function pack():void
+		{
+			canvas = new BitmapData( canvasSize.width, canvasSize.height, true, 0xAA566156);
+			drawGrid( canvas);
+			
+			packer.pack( canvas, this);
+		}
+		
+		private function drawGrid( canvas:BitmapData):void
+		{
+			var w:Number = 32;
+			var rect:Rectangle = new Rectangle( 0, 0, w, w);
+			var i:int;
+			var j:int;
+			for ( i = 0; i < canvas.width; i += w * 2)
+			for ( j = 0; j < canvas.height; j += w)
+			{
+				rect.x = i + ( j % ( w * 2));
+				rect.y = j;
+				canvas.fillRect( rect, 0xAA505A50);
+			}
 		}
 		
 		private function drawFrames( e:Event = null):void
@@ -67,6 +102,8 @@ package com.pdev.swf
 			if ( display.currentFrame == 1 && frames.length > 0)
 			{
 				display.removeEventListener(Event.ENTER_FRAME, drawFrames);
+				
+				pack();
 				
 				dispatchEvent( new ProgressEvent( ProgressEvent.PROGRESS, false, false, display.totalFrames, display.totalFrames));
 				dispatchEvent( new Event( Event.COMPLETE));
@@ -78,21 +115,26 @@ package com.pdev.swf
 			
 			var rect:Rectangle = getRealBounds( display);
 			
-			if ( globalRect == null) globalRect = rect;
-			else globalRect = globalRect.union( rect);
-			
 			if ( Math.floor( rect.width) == 0 || Math.floor( rect.height) == 0) return;
+			if ( rect.x > 10000 || rect.y > 10000) return;
 			
+			rect.x *= scale;
+			rect.y *= scale;
 			rect.width *= scale;
 			rect.height *= scale;
 			
+			if ( globalRect == null) globalRect = rect;
+			else globalRect = globalRect.union( rect);
+			
 			var bd:BitmapData = new BitmapData( rect.width + padding.x * 2, rect.height + padding.y * 2, true, 0);
 			var matrix:Matrix = new Matrix();
-			matrix.translate( -rect.x + padding.x, -rect.y + padding.y);
 			matrix.scale( scale, scale);
+			matrix.translate( -rect.x + padding.x, -rect.y + padding.y);
 			bd.draw( display, matrix);
 			
+			bdArray.push( bd);
 			var frame:SWFFrame = new SWFFrame( bd, matrix, rect);
+			frame.index = display.currentFrame;
 			frames.push( frame);
 			
 			dispatchEvent( new ProgressEvent( ProgressEvent.PROGRESS, false, false, display.currentFrame, display.totalFrames));

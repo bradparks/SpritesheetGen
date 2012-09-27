@@ -9,11 +9,13 @@ package com.pdev.core
 	import com.pdev.core.notify.AlertManager;
 	import com.pdev.data.ImportSettings;
 	import com.pdev.events.AnimationLoadEvent;
+	import com.pdev.events.LibraryEvent;
 	import com.pdev.events.SWFLoadEvent;
 	import com.pdev.gui.AnimationImporterWindow;
 	import com.pdev.gui.AnimationPreviewPanel;
 	import com.pdev.gui.LibraryPanel;
 	import com.pdev.gui.MainPanel;
+	import com.pdev.gui.PropertiesPanel;
 	import com.pdev.gui.SpriteFrameDisplay;
 	import flash.desktop.ClipboardFormats;
 	import flash.desktop.NativeDragActions;
@@ -52,6 +54,7 @@ package com.pdev.core
 		
 		private var frameDisplay:SpriteFrameDisplay;
 		private var previewPanel:AnimationPreviewPanel;
+		private var propPanel:PropertiesPanel;
 		
 		public function Main():void 
 		{
@@ -77,20 +80,34 @@ package com.pdev.core
 			
 			previewPanel = new AnimationPreviewPanel( this);
 			
-			libraryPanel = new LibraryPanel( this, frameDisplay, previewPanel);
+			propPanel = new PropertiesPanel( frameDisplay);
+			propPanel.x = stage.stageWidth - 300;
+			propPanel.y = 0;
+			propPanel.setSize( 300, 120);
+			
+			libraryPanel = new LibraryPanel( this);
 			libraryPanel.x = 0;
 			libraryPanel.y = 120;
 			libraryPanel.addEventListener( SWFLoadEvent.SWF_LOAD, loadSWFS);
+			libraryPanel.addEventListener(LibraryEvent.SELECT, updateSelectedSpritesheet);
 			
 			swfLoader = new SWFLoader( importMovieClips);
 			library = new AnimationLibrary( libraryPanel);
 
-			mainPanel = new MainPanel( frameDisplay, swfLoader);
+			mainPanel = new MainPanel( swfLoader);
 			this.addChild( mainPanel.display);
+			mainPanel.display.addChild( propPanel);
 			
 			//sideBar.getWindowAt(0).dispatchEvent( new Event( Event.SELECT));
 			
 			updateGUI();
+		}
+		
+		private function updateSelectedSpritesheet( e:LibraryEvent):void
+		{
+			frameDisplay.display( e.spritesheet);
+			previewPanel.preview( e.spritesheet);
+			propPanel.load( e.spritesheet);
 		}
 		
 		private function importMovieClips( loaderInfo:LoaderInfo):void
@@ -166,6 +183,8 @@ package com.pdev.core
 			previewPanel.y = stage.stageHeight - 250;
 			previewPanel.setSize( 200, 250);
 			libraryPanel.setSize( 200, ( stage.stageHeight - mainPanel.display.height - previewPanel.height));
+			
+			propPanel.x = stage.stageWidth - 300;
 		}
 		
 	}

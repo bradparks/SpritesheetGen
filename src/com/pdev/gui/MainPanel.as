@@ -20,29 +20,29 @@ package com.pdev.gui
 		
 		public var display:Panel;
 		
-		private var renderFrames:PushButton;
+		//private var renderFrames:PushButton;
 		private var loadSWF:PushButton;
 		
-		private var frameDisplay:SpriteFrameDisplay;
+		//private var frameDisplay:SpriteFrameDisplay;
 		private var swfLoader:SWFLoader;
 		
 		private var file:File;
 		
-		public function MainPanel( frameDisplay:SpriteFrameDisplay, swfLoader:SWFLoader) 
+		public function MainPanel( swfLoader:SWFLoader) 
 		{
 			display = new Panel();
 			display.height = 120;
 			
-			renderFrames = new PushButton( display, 400, 100, "Render", onRender);
+			//renderFrames = new PushButton( display, 400, 100, "Render", onRender);
 			loadSWF = new PushButton( display, 20, 100, "Load", onLoad);
 			
-			this.frameDisplay = frameDisplay;
+			//this.frameDisplay = frameDisplay;
 			this.swfLoader = swfLoader;
 		}
 		
 		private function onRender( e:MouseEvent):void 
 		{
-			frameDisplay.rerender();
+			//frameDisplay.rerender();
 		}
 		
 		private function onLoad( e:MouseEvent):void

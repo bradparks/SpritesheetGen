@@ -14,6 +14,7 @@ package com.pdev.gui
 	import flash.display.LoaderInfo;
 	import flash.display.MovieClip;
 	import flash.events.MouseEvent;
+	import flash.geom.Rectangle;
 	/**
 	 * ...
 	 * @author P Svilans
@@ -105,6 +106,7 @@ package com.pdev.gui
 				{
 					var setting:ImportSettings = new ImportSettings( objects[i].nameChange.text, objects[i].movieclip, objects[i].scale.value);
 					setting.framerate = framerate;
+					setting.canvasSize = new Rectangle( 0, 0, objects[i].xDim.value, objects[i].yDim.value);
 					settings.push( setting);
 				}
 			}
