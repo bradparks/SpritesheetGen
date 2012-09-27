@@ -10,6 +10,8 @@ package com.pdev.swf
 	public class SWFFrame 
 	{
 		
+		public var name:String;
+		
 		public var rect:Rectangle;
 		public var matrix:Matrix;
 		public var bd:BitmapData;

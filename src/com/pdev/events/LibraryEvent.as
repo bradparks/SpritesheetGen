@@ -11,6 +11,7 @@ package com.pdev.events
 	{
 		
 		public static const SELECT:String = "select";
+		public static const EXPORT:String = "export";
 		
 		public var spritesheet:SWFSpriteSheet;
 		

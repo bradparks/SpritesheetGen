@@ -32,7 +32,6 @@ package com.pdev.swf
 		
 		public var globalRect:Rectangle;
 		
-		
 		private var display:MovieClip;
 		private var scale:Number;
 		private var padding:Point;
@@ -43,23 +42,35 @@ package com.pdev.swf
 		public var canvasSize:Rectangle;
 		public var canvas:BitmapData;
 		
-		public function SWFSpriteSheet( importSettings:ImportSettings) 
+		public function SWFSpriteSheet() 
 		{
-			this.settings = importSettings;
 			frames = new Array();
 			bdArray = new Array();
 			
+			container = new Sprite();
+			
+			packer = new FramePacker();
+		}
+		
+		public function concat( spritesheet:SWFSpriteSheet):void
+		{
+			/* TODO somehow get packing to work, so that multiple spritesheets can be packed into 1!*/
+			frames = frames.concat( spritesheet.frames);
+			bdArray = bdArray.concat( spritesheet.bdArray);
+		}
+		
+		public function importMovieClip( importSettings:ImportSettings):void
+		{
+			this.settings = importSettings;
 			this.name = settings.name;
 			
 			this.display = settings.movieclip;
 			display.x = 0;
 			display.y = 0;
-			this.scale = settings.scale;
-			
-			this.padding = settings.padding;
-			
-			container = new Sprite();
 			container.addChild( display);
+			
+			this.scale = settings.scale;
+			this.padding = settings.padding;
 			
 			this.canvasSize = settings.canvasSize;
 			if ( this.canvasSize == null) this.canvasSize = new Rectangle( 0, 0, 512, 512);
@@ -68,10 +79,10 @@ package com.pdev.swf
 			reset();
 			
 			display.addEventListener(Event.ENTER_FRAME, drawFrames);
-			drawFrames();
-			play();
 			
-			packer = new FramePacker();
+			drawFrames();
+			
+			play();
 		}
 		
 		public function pack():void
@@ -135,6 +146,7 @@ package com.pdev.swf
 			bdArray.push( bd);
 			var frame:SWFFrame = new SWFFrame( bd, matrix, rect);
 			frame.index = display.currentFrame;
+			frame.name = name;
 			frames.push( frame);
 			
 			dispatchEvent( new ProgressEvent( ProgressEvent.PROGRESS, false, false, display.currentFrame, display.totalFrames));

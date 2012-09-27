@@ -64,14 +64,14 @@ package com.pdev.gui
 		
 		private function onStop( e:MouseEvent):void
 		{
-			currentFrame = 1;
+			currentFrame = 0;
 			removeEventListener(Event.ENTER_FRAME, enterFrame);
 		}
 		
 		public function preview( spritesheet:SWFSpriteSheet):void
 		{
 			current = spritesheet;
-			trace ( spritesheet.globalRect);
+			//trace ( spritesheet.globalRect);
 			canvas = new BitmapData( spritesheet.globalRect.width, spritesheet.globalRect.height, true, 0);
 			render.bitmapData = canvas;
 			var scale:Number = Math.min( this.width / canvas.width, ( this.height - 20) / canvas.height);

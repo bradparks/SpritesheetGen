@@ -11,8 +11,12 @@ package com.pdev.core
 	import com.pdev.events.AnimationLoadEvent;
 	import com.pdev.events.LibraryEvent;
 	import com.pdev.events.SWFLoadEvent;
+	import com.pdev.export.IExport;
+	import com.pdev.export.PNGSequenceExport;
+	import com.pdev.export.StarlingExport;
 	import com.pdev.gui.AnimationImporterWindow;
 	import com.pdev.gui.AnimationPreviewPanel;
+	import com.pdev.gui.ExportWindow;
 	import com.pdev.gui.LibraryPanel;
 	import com.pdev.gui.MainPanel;
 	import com.pdev.gui.PropertiesPanel;
@@ -56,6 +60,8 @@ package com.pdev.core
 		private var previewPanel:AnimationPreviewPanel;
 		private var propPanel:PropertiesPanel;
 		
+		private var exporters:/*IExport*/Array;
+		
 		public function Main():void 
 		{
 			Style.setStyle( Style.DARK);
@@ -72,6 +78,8 @@ package com.pdev.core
 		{
 			AlertManager.init( stage);
 			
+			exporters = [ new StarlingExport(), new PNGSequenceExport()];
+			
 			bg = new Bitmap( new BitmapData( 1, 1, false, 0x333528));
 			this.addChild( bg);
 			
@@ -84,6 +92,7 @@ package com.pdev.core
 			propPanel.x = stage.stageWidth - 300;
 			propPanel.y = 0;
 			propPanel.setSize( 300, 120);
+			propPanel.addEventListener(LibraryEvent.EXPORT, onExport);
 			
 			libraryPanel = new LibraryPanel( this);
 			libraryPanel.x = 0;
@@ -101,6 +110,13 @@ package com.pdev.core
 			//sideBar.getWindowAt(0).dispatchEvent( new Event( Event.SELECT));
 			
 			updateGUI();
+		}
+		
+		private function onExport(e:LibraryEvent):void 
+		{
+			var exportWindow:ExportWindow = new ExportWindow( e.spritesheet, exporters, this);
+			exportWindow.x = ( stage.stageWidth - exportWindow.width) * 0.5;
+			exportWindow.y = ( stage.stageHeight - exportWindow.height) * 0.5;
 		}
 		
 		private function updateSelectedSpritesheet( e:LibraryEvent):void
@@ -178,11 +194,11 @@ package com.pdev.core
 			
 			mainPanel.resize();
 			
-			frameDisplay.setSize( stage.stageWidth - 200, stage.stageHeight - 120);
-			
 			previewPanel.y = stage.stageHeight - 250;
-			previewPanel.setSize( 200, 250);
-			libraryPanel.setSize( 200, ( stage.stageHeight - mainPanel.display.height - previewPanel.height));
+			previewPanel.setSize( 250, 250);
+			libraryPanel.setSize( 250, ( stage.stageHeight - mainPanel.display.height - previewPanel.height));
+			
+			frameDisplay.setSize( stage.stageWidth - libraryPanel.width, stage.stageHeight - mainPanel.display.height);
 			
 			propPanel.x = stage.stageWidth - 300;
 		}

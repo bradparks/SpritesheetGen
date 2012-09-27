@@ -75,7 +75,7 @@ package com.pdev.gui
 					f = current.frames[i];
 					if ( f.fit != null && f.fit.contains( mx, my) && mx < f.fit.x + f.rect.width && my < f.fit.y + f.rect.height)
 					{
-						hlight.lineStyle( 4, 0x70BABA, 0.4);
+						hlight.lineStyle( 1, 0x70BABA, 0.4);
 						hlight.drawRect( f.fit.x, f.fit.y, f.rect.width, f.rect.height);
 						break;
 					}

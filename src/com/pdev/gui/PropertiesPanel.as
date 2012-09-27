@@ -5,6 +5,7 @@ package com.pdev.gui
 	import com.bit101.components.Panel;
 	import com.bit101.components.PushButton;
 	import com.bit101.components.VBox;
+	import com.pdev.events.LibraryEvent;
 	import com.pdev.swf.SWFSpriteSheet;
 	import flash.display.DisplayObjectContainer;
 	import flash.events.Event;
@@ -15,6 +16,8 @@ package com.pdev.gui
 	public class PropertiesPanel extends Panel
 	{
 		
+		[Event(name="export", type="com.pdev.events.LibraryEvent")]
+		
 		private var items:VBox;
 		
 		private var dimensions:HBox;
@@ -24,6 +27,7 @@ package com.pdev.gui
 		private var current:SWFSpriteSheet;
 		
 		private var save_btn:PushButton;
+		private var export_btn:PushButton;
 		
 		private var frameDisplay:SpriteFrameDisplay;
 		
@@ -31,14 +35,20 @@ package com.pdev.gui
 		{
 			super();
 			
-			items = new VBox( this);
+			items = new VBox( this, 10, 10);
 			
-			dimensions = new HBox( items, 5, 5);
+			dimensions = new HBox( items, 0, 0);
 			dimX = new NumericStepper( dimensions);
 			dimY = new NumericStepper( dimensions);
 			
 			save_btn = new PushButton( items, 0, 0, "Save", save);
+			export_btn = new PushButton( items, 0, 0, "Export", export);
 			this.frameDisplay = frameDisplay;
+		}
+		
+		private function export( e:Event):void
+		{
+			if ( current) dispatchEvent( new LibraryEvent( LibraryEvent.EXPORT, current));
 		}
 		
 		/**

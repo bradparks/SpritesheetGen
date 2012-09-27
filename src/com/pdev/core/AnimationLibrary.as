@@ -22,7 +22,8 @@ package com.pdev.core
 		
 		public function addAnimation( importSettings:ImportSettings):void
 		{
-			var spritesheet:SWFSpriteSheet = new SWFSpriteSheet( importSettings);
+			var spritesheet:SWFSpriteSheet = new SWFSpriteSheet();
+			spritesheet.importMovieClip( importSettings);
 			
 			libraryPanel.addLibraryItem( spritesheet);
 			library.push( spritesheet);
