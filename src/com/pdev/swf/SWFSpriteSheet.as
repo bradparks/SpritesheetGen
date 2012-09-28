@@ -4,6 +4,7 @@ package com.pdev.swf
 	import com.pdev.utils.MovieClipControl;
 	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
+	import flash.display.DisplayObjectContainer;
 	import flash.display.MovieClip;
 	import flash.display.Shape;
 	import flash.display.Sprite;
@@ -34,7 +35,7 @@ package com.pdev.swf
 		
 		private var display:MovieClip;
 		private var scale:Number;
-		private var padding:Point;
+		public var padding:Point;
 		
 		public var settings:ImportSettings;
 		
@@ -87,25 +88,9 @@ package com.pdev.swf
 		
 		public function pack():void
 		{
-			canvas = new BitmapData( canvasSize.width, canvasSize.height, true, 0xAA566156);
-			drawGrid( canvas);
+			canvas = new BitmapData( canvasSize.width, canvasSize.height, true, 0);
 			
 			packer.pack( canvas, this);
-		}
-		
-		private function drawGrid( canvas:BitmapData):void
-		{
-			var w:Number = 32;
-			var rect:Rectangle = new Rectangle( 0, 0, w, w);
-			var i:int;
-			var j:int;
-			for ( i = 0; i < canvas.width; i += w * 2)
-			for ( j = 0; j < canvas.height; j += w)
-			{
-				rect.x = i + ( j % ( w * 2));
-				rect.y = j;
-				canvas.fillRect( rect, 0xAA505A50);
-			}
 		}
 		
 		private function drawFrames( e:Event = null):void
@@ -124,10 +109,16 @@ package com.pdev.swf
 				return;
 			}
 			
-			var rect:Rectangle = getRealBounds( display);
+			var rect:Rectangle
+			rect = getRealChildBounds( display);
+			//rect = display.getBounds( display.parent);
 			
 			if ( Math.floor( rect.width) == 0 || Math.floor( rect.height) == 0) return;
-			if ( rect.x > 10000 || rect.y > 10000) return;
+			if ( rect.x > 10000 || rect.y > 10000)
+			{
+				trace ( "fucking huge bounds...");
+				return;
+			}
 			
 			rect.x *= scale;
 			rect.y *= scale;
@@ -167,6 +158,23 @@ package com.pdev.swf
 			MovieClipControl.play( display);
 		}
 		
+		private function getRealChildBounds( clip:DisplayObject):Rectangle
+		{
+			var rect:Rectangle = getRealBounds( clip);
+			
+			if ( clip is DisplayObjectContainer)
+			{
+				var cont:DisplayObjectContainer = clip as DisplayObjectContainer;
+				
+				for ( var i:int = 0; i < cont.numChildren; i++)
+				{
+					rect = rect.union( getRealBounds( cont.getChildAt( i)));
+				}
+			}
+			
+			return rect;
+		}
+		
 		private function getRealBounds( clip:DisplayObject):Rectangle
 		{
 			var bounds:Rectangle = clip.getBounds(clip.parent);
@@ -175,7 +183,7 @@ package com.pdev.swf
 			bounds.height = Math.ceil(bounds.height);
 			bounds.width = Math.ceil(bounds.width);
 			
-			var realBounds:Rectangle = new Rectangle(0, 0, bounds.width + padding.x * 2, bounds.height + padding.y * 2);
+			var realBounds:Rectangle = new Rectangle( 0, 0, bounds.width, bounds.height);
 			
 			if (clip.filters.length > 0)
 			{
@@ -194,6 +202,8 @@ package com.pdev.swf
 				{
 					tmpBData = new BitmapData(filterRect.width, filterRect.height, true, 0);
 					filterRect = tmpBData.generateFilterRect(tmpBData.rect, clipFilters[j]);
+					filterRect.x = -( filterRect.width - bounds.width) * 0.5
+					filterRect.y = -( filterRect.height - bounds.height) * 0.5
 					realBounds = realBounds.union(filterRect);
 					tmpBData.dispose();
 				}

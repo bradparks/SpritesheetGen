@@ -10,7 +10,7 @@ package com.pdev.events
 	public class LibraryEvent extends Event 
 	{
 		
-		public static const SELECT:String = "select";
+		public static const SELECT_ANIMATION:String = "selectAnimation";
 		public static const EXPORT:String = "export";
 		
 		public var spritesheet:SWFSpriteSheet;

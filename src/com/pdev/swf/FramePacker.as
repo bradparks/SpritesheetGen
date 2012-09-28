@@ -41,18 +41,21 @@ package com.pdev.swf
 			
 			var isFit:Boolean = true;
 			
+			var p:Point = spritesheet.settings.padding;
+			
 			for ( i = 0; i < sorted.length; i++)
 			{
 				frame = sorted[i];
-				node = findNode( root, frame.rect.width, frame.rect.height);
+				node = findNode( root, frame.rect.width + p.x * 2, frame.rect.height + p.y * 2);
 				if ( node != null)
 				{
-					frame.fit = splitNode( node, frame.rect.width, frame.rect.height).val.rect;
+					frame.fit = splitNode( node, frame.rect.width + p.x * 2, frame.rect.height + p.y * 2).val.rect;
 					
 					canvas.copyPixels( frame.bd, frame.bd.rect, new Point( frame.fit.x, frame.fit.y), null, null, true);
 				}
 				else
 				{
+					frame.fit = null;
 					isFit = false;
 				}
 			}

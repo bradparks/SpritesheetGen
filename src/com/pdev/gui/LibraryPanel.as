@@ -86,7 +86,7 @@ package com.pdev.gui
 		{
 			var libraryData:LibraryData = swfList.selectedItem as LibraryData;
 			
-			dispatchEvent( new LibraryEvent( LibraryEvent.SELECT, libraryData.spritesheet));
+			dispatchEvent( new LibraryEvent( LibraryEvent.SELECT_ANIMATION, libraryData.spritesheet));
 		}
 		
 		override public function setSize(w:Number, h:Number):void 

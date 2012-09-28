@@ -44,7 +44,7 @@ package com.pdev.gui
 			
 			padding = new Point( 2, 2);
 			
-			displayPane = new ScrollPane( this, 200, 120);
+			displayPane = new ScrollPane( this);
 			displayPane.autoHideScrollBar = true;
 			displayPane.dragContent = false;
 			
@@ -73,10 +73,10 @@ package com.pdev.gui
 				for ( i = 0; i < current.frames.length; i++)
 				{
 					f = current.frames[i];
-					if ( f.fit != null && f.fit.contains( mx, my) && mx < f.fit.x + f.rect.width && my < f.fit.y + f.rect.height)
+					if ( f.fit != null && f.fit.contains( mx, my) && mx < f.fit.x + f.rect.width + current.padding.x * 2 && my < f.fit.y + f.rect.height + current.padding.y * 2)
 					{
 						hlight.lineStyle( 1, 0x70BABA, 0.4);
-						hlight.drawRect( f.fit.x, f.fit.y, f.rect.width, f.rect.height);
+						hlight.drawRect( f.fit.x, f.fit.y, f.rect.width + current.padding.x * 2, f.rect.height + current.padding.y * 2);
 						break;
 					}
 				}
@@ -113,24 +113,35 @@ package com.pdev.gui
 			screen.height = h - 15 - padding.y;
 		}
 		
-		private function resizeCanvas( w:Number, h:Number):void
-		{
-			canvas = new BitmapData( w, h, true, 0);
-			render.bitmapData = canvas;
-			
-			displayPane.update();
-		}
-		
 		public function rerender():void
 		{
 			display( current);
+		}
+		
+		private function drawGrid( canvas:BitmapData):void
+		{
+			var w:Number = 32;
+			var rect:Rectangle = new Rectangle( 0, 0, w, w);
+			var i:int;
+			var j:int;
+			for ( i = 0; i < canvas.width; i += w * 2)
+			for ( j = 0; j < canvas.height; j += w)
+			{
+				rect.x = i + ( j % ( w * 2));
+				rect.y = j;
+				canvas.fillRect( rect, 0xAA505A50);
+			}
 		}
 		
 		public function display( spritesheet:SWFSpriteSheet):void
 		{
 			current = spritesheet;
 			
-			render.bitmapData = spritesheet.canvas;
+			canvas =  new BitmapData( current.canvas.width, current.canvas.height, true, 0xAA566156);
+			drawGrid( canvas);
+			
+			render.bitmapData = canvas;
+			canvas.copyPixels( spritesheet.canvas, spritesheet.canvas.rect, new Point(), null, null, true);
 			displayPane.update();
 			
 			/*var i:int;

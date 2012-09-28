@@ -107,7 +107,7 @@ package com.pdev.gui
 			{
 				if ( checkboxes[i].selected)
 				{
-					var file:File = new File( url + exporters[i].getName() + "/");
+					var file:File = new File( url + exporters[i].getName());
 					file.createDirectory();
 					exporters[i].export( spritesheet, file);
 				}

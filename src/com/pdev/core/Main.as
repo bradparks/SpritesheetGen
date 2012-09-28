@@ -98,7 +98,7 @@ package com.pdev.core
 			libraryPanel.x = 0;
 			libraryPanel.y = 120;
 			libraryPanel.addEventListener( SWFLoadEvent.SWF_LOAD, loadSWFS);
-			libraryPanel.addEventListener(LibraryEvent.SELECT, updateSelectedSpritesheet);
+			libraryPanel.addEventListener(LibraryEvent.SELECT_ANIMATION, updateSelectedSpritesheet);
 			
 			swfLoader = new SWFLoader( importMovieClips);
 			library = new AnimationLibrary( libraryPanel);
@@ -198,6 +198,8 @@ package com.pdev.core
 			previewPanel.setSize( 250, 250);
 			libraryPanel.setSize( 250, ( stage.stageHeight - mainPanel.display.height - previewPanel.height));
 			
+			frameDisplay.x = libraryPanel.width;
+			frameDisplay.y = mainPanel.display.height;
 			frameDisplay.setSize( stage.stageWidth - libraryPanel.width, stage.stageHeight - mainPanel.display.height);
 			
 			propPanel.x = stage.stageWidth - 300;
