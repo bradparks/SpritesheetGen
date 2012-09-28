@@ -74,8 +74,11 @@ package com.pdev.gui
 			//trace ( spritesheet.globalRect);
 			canvas = new BitmapData( spritesheet.globalRect.width, spritesheet.globalRect.height, true, 0);
 			render.bitmapData = canvas;
-			var scale:Number = Math.min( this.width / canvas.width, ( this.height - 20) / canvas.height);
+			var scale:Number = Math.min( 1, Math.min( this.width / canvas.width, ( this.height - 20) / canvas.height));
 			render.scaleX = render.scaleY = scale;
+			
+			render.x = ( this.width - render.width) * 0.5;
+			render.y = ( this.height - render.height) * 0.5;
 			
 			offset = new Point( spritesheet.globalRect.x, spritesheet.globalRect.y);
 			currentFrame = 0;

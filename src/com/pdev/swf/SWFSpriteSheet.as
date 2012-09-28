@@ -43,6 +43,8 @@ package com.pdev.swf
 		public var canvasSize:Rectangle;
 		public var canvas:BitmapData;
 		
+		private var tempCanvas:BitmapData;
+		
 		public function SWFSpriteSheet() 
 		{
 			frames = new Array();
@@ -51,6 +53,8 @@ package com.pdev.swf
 			container = new Sprite();
 			
 			packer = new FramePacker();
+			
+			tempCanvas = new BitmapData( 1200, 1200, true, 0);
 		}
 		
 		public function concat( spritesheet:SWFSpriteSheet):void
@@ -110,8 +114,19 @@ package com.pdev.swf
 			}
 			
 			var rect:Rectangle
-			rect = getRealChildBounds( display);
-			//rect = display.getBounds( display.parent);
+			//rect = getRealChildBounds( display);
+			rect = display.getBounds( display.parent);
+			var mid:Point = new Point( rect.x + rect.width * 0.5, rect.y + rect.height * 0.5);
+			var mat:Matrix = new Matrix();
+			mat.translate( 600 - mid.x, 600 - mid.y);
+			tempCanvas.fillRect( tempCanvas.rect, 0);
+			tempCanvas.draw( display, mat);
+			tempCanvas.threshold( tempCanvas, tempCanvas.rect, new Point(), ">", 0x00000000, 0xFF000000, 0xFF000000, false);
+			
+			rect = tempCanvas.getColorBoundsRect( 0xFF000000, 0xFF000000);
+			rect.x -= 600 - mid.x;
+			rect.y -= 600 - mid.y;
+			trace ( rect);
 			
 			if ( Math.floor( rect.width) == 0 || Math.floor( rect.height) == 0) return;
 			if ( rect.x > 10000 || rect.y > 10000)
@@ -177,7 +192,7 @@ package com.pdev.swf
 		
 		private function getRealBounds( clip:DisplayObject):Rectangle
 		{
-			var bounds:Rectangle = clip.getBounds(clip.parent);
+			var bounds:Rectangle = clip.getBounds( clip.parent);
 			bounds.x = Math.floor(bounds.x);
 			bounds.y = Math.floor(bounds.y);
 			bounds.height = Math.ceil(bounds.height);
